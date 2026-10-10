@@ -1,0 +1,49 @@
+
+name: Build APK TB
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode
+        uses: actions/checkout@v4
+
+      - name: Siapkan Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Ekstrak proyek TB
+        run: |
+          if [ ! -f settings.gradle.kts ]; then
+            ZIP_FILE=$(find . -maxdepth 2 -name 'TB_Teman_Bicara_Proyek.zip' -print -quit)
+            if [ -z "$ZIP_FILE" ]; then
+              echo "File ZIP proyek TB belum diunggah."
+              exit 1
+            fi
+            unzip -o "$ZIP_FILE" -d .
+          fi
+
+      - name: Siapkan Gradle
+        run: |
+          curl -L https://services.gradle.org/distributions/gradle-8.9-bin.zip -o /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /tmp
+          echo "/tmp/gradle-8.9/bin" >> "$GITHUB_PATH"
+
+      - name: Bangun APK
+        run: gradle assembleDebug
+
+      - name: Simpan APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TB-debug-APK
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
