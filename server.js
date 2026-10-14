@@ -8,11 +8,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 dotenv.config();
 
 const app = express();
-
-// --- PERBAIKAN UNTUK ERROR X-FORWARDED-FOR ---
 app.set('trust proxy', 1); 
-// ---------------------------------------------
-
 const PORT = process.env.PORT || 3000;
 
 // Middleware Keamanan
