@@ -49,7 +49,7 @@ app.post('/chat', async (req, res) => {
     res.json({ reply: text });
   } catch (error) {
     console.error("Error Gemini:", error);
-    res.status(500).json({ error: "Maaf, terjadi kesalahan pada server AI." });
+    res.status(500).json({ error: error.message });
   }
 });
 
